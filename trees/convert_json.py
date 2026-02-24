@@ -17,20 +17,15 @@ def flatten_dict(
         prefix, data = stack.pop()
 
         if isinstance(data, dict):
-            for k, v in data.items():
+            for k, v in reversed(data.items()):
                 new_key = f"{prefix}{delimiter}{k}" if prefix else k
-                if isinstance(v, (dict, list)):
-                    stack.append((new_key, v))
-                else:
-                    ret[new_key] = v
+                stack.append((new_key, v))
         elif isinstance(data, list):
-            for i, item in enumerate(data):
+            for i in range(len(data)-1, -1, -1):
+                item = data[i]
                 # create an indexed key like "users.0", "users.1", etc.
                 new_key = f"{prefix}{delimiter}{i}" if prefix else str(i)
-                if isinstance(item, (dict, list)):
-                    stack.append((new_key, item))
-                else:
-                    ret[new_key] = item
+                stack.append((new_key, item))
         else:
             # fallback for root-level primitives
             ret[prefix] = data
